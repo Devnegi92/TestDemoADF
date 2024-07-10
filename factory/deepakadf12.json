@@ -1,0 +1,9 @@
+{
+	"name": "deepakadf12",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "178d50c1-55de-465c-bcf1-ec26032af91f",
+		"tenantId": "cd47cba4-ede3-4e45-ad35-b2dfee4368da"
+	}
+}
