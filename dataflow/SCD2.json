@@ -1,0 +1,181 @@
+{
+	"name": "SCD2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkreference"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "AddingIsActiveColumn"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          state as string,",
+				"          salary as integer,",
+				"          age as integer,",
+				"          bonus as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          state as string,",
+				"          salary as integer,",
+				"          age as integer,",
+				"          bonus as integer,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sinkreference",
+				"sinkreference select(mapColumn(",
+				"          employee_id_reference = employee_id,",
+				"          employee_name_reference = employee_name,",
+				"          department_reference = department,",
+				"          state_reference = state,",
+				"          salary_reference = salary,",
+				"          age_reference = age,",
+				"          bonus_reference = bonus,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1, sinkreference lookup(source1@employee_id == sinkreference@employee_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(isNull(sinkreference@employee_id)||(source1@employee_name!=sinkreference@employee_name)||(source1@department!=sinkreference@department)||(source1@state!=sinkreference@state)||(source1@salary!=sinkreference@salary)||(source1@age!=sinkreference@age)||(source1@bonus!=sinkreference@bonus)) ~> filter1",
+				"filter1 derive(isActive = 1) ~> AddingIsActiveColumn",
+				"AddingIsActiveColumn select(mapColumn(",
+				"          employee_id = source1@employee_id,",
+				"          employee_name = source1@employee_name,",
+				"          department = source1@department,",
+				"          state = source1@state,",
+				"          salary = source1@salary,",
+				"          age = source1@age,",
+				"          bonus = source1@bonus,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"lookup1 filter(",
+				"(isNull(sinkreference@employee_id) && ((source1@employee_name!=sinkreference@employee_name)||(source1@department!=sinkreference@department)||(source1@state!=sinkreference@state)||(source1@salary!=sinkreference@salary)||(source1@age!=sinkreference@age)||(source1@bonus!=sinkreference@bonus)))) ~> filter2",
+				"filter2 derive(isActive = 0) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          employee_id = source1@employee_id,",
+				"          employee_name = source1@employee_name,",
+				"          department = source1@department,",
+				"          state = source1@state,",
+				"          salary = source1@salary,",
+				"          age = source1@age,",
+				"          bonus = source1@bonus,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          state as string,",
+				"          salary as integer,",
+				"          age as integer,",
+				"          bonus as integer,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          state as string,",
+				"          salary as integer,",
+				"          age as integer,",
+				"          bonus as integer,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+			]
+		}
+	}
+}
