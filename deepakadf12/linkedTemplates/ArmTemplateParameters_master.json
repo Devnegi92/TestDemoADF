@@ -17,6 +17,9 @@
 		"ls_sp_log_pipeline_password": {
 			"value": ""
 		},
+		"ls_sql_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://devadls12.dfs.core.windows.net/"
 		},

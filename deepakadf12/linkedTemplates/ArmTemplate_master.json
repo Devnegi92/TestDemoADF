@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'ls_sp_log_pipeline'"
 		},
+		"ls_sql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_sql'"
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devadls12.dfs.core.windows.net/"
@@ -83,6 +87,9 @@
 					"ls_sp_log_pipeline_password": {
 						"value": "[parameters('ls_sp_log_pipeline_password')]"
 					},
+					"ls_sql_connectionString": {
+						"value": "[parameters('ls_sql_connectionString')]"
+					},
 					"FileServer1_password": {
 						"value": "[parameters('FileServer1_password')]"
 					},
@@ -107,6 +114,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "deepakadf12_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'deepakadf12_ArmTemplate_0')]"
+			]
 		}
 	]
 }
