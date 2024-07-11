@@ -28,10 +28,6 @@
 					"name": "sink1"
 				},
 				{
-					"dataset": {
-						"referenceName": "AzureSqlTable2",
-						"type": "DatasetReference"
-					},
 					"name": "sink2"
 				}
 			],
@@ -59,6 +55,9 @@
 				},
 				{
 					"name": "select3"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -87,7 +86,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> sinkreference",
+				"     query: 'select * from student_SCD2 where isActive=1',",
+				"     format: 'query') ~> sinkreference",
 				"sinkreference select(mapColumn(",
 				"          employee_id_reference = employee_id,",
 				"          employee_name_reference = employee_name,",
@@ -133,6 +133,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 alterRow(updateIf(1==1)) ~> alterRow1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -152,29 +153,12 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     saveOrder: 2,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"select3 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     input(",
-				"          employee_id as integer,",
-				"          employee_name as string,",
-				"          department as string,",
-				"          state as string,",
-				"          salary as integer,",
-				"          age as integer,",
-				"          bonus as integer,",
-				"          isActive as integer",
-				"     ),",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
