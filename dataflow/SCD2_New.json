@@ -1,0 +1,167 @@
+{
+	"name": "SCD2_New",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          {EMPLOYEE NAME} as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1 derive(isActive = 1) ~> derivedColumn1",
+				"source2 select(mapColumn(",
+				"          SQL_surr_key = surr_key,",
+				"          SQL_ID = ID,",
+				"          SQL_employee_name = employee_name,",
+				"          SQL_DESIGNATION = DESIGNATION,",
+				"          SQL_DEPARTMENT = DEPARTMENT,",
+				"          SQL_isActive = isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1, select1 lookup(ID == SQL_ID,",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(!isNull(SQL_ID)) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          SQL_surr_key,",
+				"          SQL_ID,",
+				"          SQL_employee_name,",
+				"          SQL_DESIGNATION,",
+				"          SQL_DEPARTMENT,",
+				"          SQL_isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 derive(SQL_isActive = 0) ~> derivedColumn2",
+				"derivedColumn2 alterRow(updateIf(1==1)) ~> alterRow1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ID,",
+				"          employee_name = {EMPLOYEE NAME},",
+				"          DESIGNATION,",
+				"          DEPARTMENT,",
+				"          isActive",
+				"     )) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['surr_key'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          surr_key = SQL_surr_key,",
+				"          ID = SQL_ID,",
+				"          employee_name = SQL_employee_name,",
+				"          DESIGNATION = SQL_DESIGNATION,",
+				"          DEPARTMENT = SQL_DEPARTMENT,",
+				"          isActive = SQL_isActive",
+				"     )) ~> sink2"
+			]
+		}
+	}
+}
