@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable2",
+	"name": "AzureSqlTable3",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_sql",
@@ -9,7 +9,12 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "employee_id",
+				"name": "surr_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID",
 				"type": "int",
 				"precision": 10
 			},
@@ -18,27 +23,12 @@
 				"type": "varchar"
 			},
 			{
-				"name": "department",
+				"name": "DESIGNATION",
 				"type": "varchar"
 			},
 			{
-				"name": "state",
+				"name": "DEPARTMENT",
 				"type": "varchar"
-			},
-			{
-				"name": "salary",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "age",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "bonus",
-				"type": "int",
-				"precision": 10
 			},
 			{
 				"name": "isActive",
