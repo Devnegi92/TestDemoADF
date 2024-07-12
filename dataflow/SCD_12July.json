@@ -40,6 +40,9 @@
 				},
 				{
 					"name": "AlterRow1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -79,7 +82,17 @@
 				"     broadcast: 'auto')~> lookup1",
 				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1",
 				"filter1 alterRow(updateIf(1==1)) ~> AlterRow1",
-				"AlterRow1 sink(allowSchemaDrift: true,",
+				"AlterRow1 select(mapColumn(",
+				"          surr_key,",
+				"          ID = referenceforlookup@ID,",
+				"          employee_name = referenceforlookup@employee_name,",
+				"          DESIGNATION = referenceforlookup@DESIGNATION,",
+				"          DEPARTMENT = referenceforlookup@DEPARTMENT,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          surr_key as integer,",
@@ -93,7 +106,7 @@
 				"     insertable:false,",
 				"     updateable:true,",
 				"     upsertable:false,",
-				"     keys:['ID','EMPLOYEE_NAME','DESIGNATION','DEPARTMENT'],",
+				"     keys:['ID','employee_name','DESIGNATION','DEPARTMENT'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
