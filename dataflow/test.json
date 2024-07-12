@@ -1,0 +1,115 @@
+{
+	"name": "test",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as short,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source2 select(mapColumn(",
+				"          SQL_ID = ID,",
+				"          SQL_employee_name = employee_name,",
+				"          SQL_DESIGNATION = DESIGNATION,",
+				"          SQL_DEPARTMENT = DEPARTMENT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1, select1 lookup(ID == SQL_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter((isNull(SQL_ID))) ~> filter1",
+				"filter1 alterRow(insertIf(1==1)) ~> alterRow1",
+				"alterRow1 select(mapColumn(",
+				"          ID,",
+				"          EMPLOYEE_NAME,",
+				"          DESIGNATION,",
+				"          DEPARTMENT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ID,",
+				"          employee_name = EMPLOYEE_NAME,",
+				"          DESIGNATION,",
+				"          DEPARTMENT",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

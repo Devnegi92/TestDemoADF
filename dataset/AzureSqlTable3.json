@@ -24,11 +24,6 @@
 			{
 				"name": "DEPARTMENT",
 				"type": "varchar"
-			},
-			{
-				"name": "isActive",
-				"type": "int",
-				"precision": 10
 			}
 		],
 		"typeProperties": {
