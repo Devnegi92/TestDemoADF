@@ -1,0 +1,73 @@
+{
+	"name": "SCD_12July",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "referenceforlookup"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> referenceforlookup",
+				"referenceforlookup select(mapColumn(",
+				"          SQL_surr_key = surr_key,",
+				"          SQL_ID = ID,",
+				"          SQL_employee_name = employee_name,",
+				"          SQL_DESIGNATION = DESIGNATION,",
+				"          SQL_DEPARTMENT = DEPARTMENT,",
+				"          SQL_isActive = isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1, referenceforlookup lookup(source1@ID == referenceforlookup@ID,",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1"
+			]
+		}
+	}
+}
