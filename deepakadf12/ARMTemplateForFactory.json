@@ -166,6 +166,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SCD2_New_PL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SCD2_New",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SCD2_New",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/SCD2_New')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SCD2_Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -701,6 +749,101 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/test_final_scd2_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "test_final_SCD2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "test_final_SCD2",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"refrence": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/test_final_SCD2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test_scd_final')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "test",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "test",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/test')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -772,7 +915,7 @@
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "employee_id",
+						"name": "ID",
 						"type": "int",
 						"precision": 10
 					},
@@ -781,37 +924,56 @@
 						"type": "varchar"
 					},
 					{
-						"name": "department",
+						"name": "DESIGNATION",
 						"type": "varchar"
 					},
 					{
-						"name": "state",
+						"name": "DEPARTMENT",
 						"type": "varchar"
-					},
-					{
-						"name": "salary",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "age",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "bonus",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "isActive",
-						"type": "int",
-						"precision": 10
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "student_SCD2"
+					"table": "employee_SCD2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "employee_name",
+						"type": "varchar"
+					},
+					{
+						"name": "DESIGNATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "employee_SCD2"
 				}
 			},
 			"dependsOn": [
@@ -1088,15 +1250,48 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "OfficeDataProject.csv",
+						"fileName": "Student.csv",
 						"fileSystem": "julysource"
 					},
-					"columnDelimiter": ",",
+					"columnDelimiter": "\t",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_Student')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Student.csv",
+						"fileSystem": "julysource"
+					},
+					"columnDelimiter": "\t",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ID\tEMPLOYEE_NAME\tDESIGNATION\tDEPARTMENT",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
@@ -1127,6 +1322,55 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "surr_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EMPLOYEE_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESIGNATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "isActive",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "employee_SCD3"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql')]"
 			]
 		},
 		{
@@ -1382,14 +1626,10 @@
 						"select2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          employee_id as integer,",
+						"          ID as integer,",
 						"          employee_name as string,",
-						"          department as string,",
-						"          state as string,",
-						"          salary as integer,",
-						"          age as integer,",
-						"          bonus as integer,",
-						"          isActive as integer",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1403,14 +1643,10 @@
 						"alterRow1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          employee_id as integer,",
+						"          ID as integer,",
 						"          employee_name as string,",
-						"          department as string,",
-						"          state as string,",
-						"          salary as integer,",
-						"          age as integer,",
-						"          bonus as integer,",
-						"          isActive as integer",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1428,6 +1664,600 @@
 				"[concat(variables('factoryId'), '/datasets/ds_adls')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCD2_New')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_adls",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable3",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID as integer,",
+						"          {EMPLOYEE NAME} as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          surr_key as integer,",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string,",
+						"          isActive as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source1 derive(isActive = 1) ~> derivedColumn1",
+						"source2 select(mapColumn(",
+						"          SQL_surr_key = surr_key,",
+						"          SQL_ID = ID,",
+						"          SQL_employee_name = employee_name,",
+						"          SQL_DESIGNATION = DESIGNATION,",
+						"          SQL_DEPARTMENT = DEPARTMENT,",
+						"          SQL_isActive = isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"source1, select1 lookup(ID == SQL_ID,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter(!isNull(SQL_ID)) ~> filter1",
+						"filter1 select(mapColumn(",
+						"          SQL_surr_key,",
+						"          SQL_ID,",
+						"          SQL_employee_name,",
+						"          SQL_DESIGNATION,",
+						"          SQL_DEPARTMENT,",
+						"          SQL_isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 derive(SQL_isActive = 0) ~> derivedColumn2",
+						"derivedColumn2 alterRow(updateIf(1==1)) ~> alterRow1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ID,",
+						"          employee_name = {EMPLOYEE NAME},",
+						"          DESIGNATION,",
+						"          DEPARTMENT,",
+						"          isActive",
+						"     )) ~> sink1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['surr_key'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          surr_key = SQL_surr_key,",
+						"          ID = SQL_ID,",
+						"          employee_name = SQL_employee_name,",
+						"          DESIGNATION = SQL_DESIGNATION,",
+						"          DEPARTMENT = SQL_DEPARTMENT,",
+						"          isActive = SQL_isActive",
+						"     )) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCD_12July')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_adls",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable3",
+								"type": "DatasetReference"
+							},
+							"name": "referenceforlookup"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string,",
+						"          isActive as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> referenceforlookup",
+						"source1, referenceforlookup lookup(source1@ID == referenceforlookup@ID,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1",
+						"filter1 alterRow(insertIf(1==1)) ~> AlterRow1",
+						"AlterRow1 select(mapColumn(",
+						"          ID = referenceforlookup@ID,",
+						"          employee_name = referenceforlookup@employee_name,",
+						"          DESIGNATION = referenceforlookup@DESIGNATION,",
+						"          DEPARTMENT = referenceforlookup@DEPARTMENT,",
+						"          isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ID,",
+						"          employee_name,",
+						"          DESIGNATION,",
+						"          DEPARTMENT,",
+						"          isActive",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable3')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_adls",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable3",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source2 select(mapColumn(",
+						"          SQL_ID = ID,",
+						"          SQL_employee_name = employee_name,",
+						"          SQL_DESIGNATION = DESIGNATION,",
+						"          SQL_DEPARTMENT = DEPARTMENT",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"source1, select1 lookup(ID == SQL_ID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter((isNull(SQL_ID)) || (EMPLOYEE_NAME!=SQL_employee_name) || (DESIGNATION!=SQL_DESIGNATION) || (DEPARTMENT!=SQL_DEPARTMENT)) ~> filter1",
+						"filter1 alterRow(insertIf(1==1)) ~> alterRow1",
+						"alterRow1 select(mapColumn(",
+						"          ID,",
+						"          EMPLOYEE_NAME,",
+						"          DESIGNATION,",
+						"          DEPARTMENT",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID as integer,",
+						"          employee_name as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ID,",
+						"          employee_name = EMPLOYEE_NAME,",
+						"          DESIGNATION,",
+						"          DEPARTMENT",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable3')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test_final_SCD2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_adls_Student",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql",
+								"type": "DatasetReference"
+							},
+							"name": "refrence"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "filter2"
+						},
+						{
+							"name": "select3"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          surr_key as integer,",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string,",
+						"          isActive as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> refrence",
+						"refrence select(mapColumn(",
+						"          surr_key_reference = surr_key,",
+						"          ID_reference = ID,",
+						"          EMPLOYEE_NAME_reference = EMPLOYEE_NAME,",
+						"          DESIGNATION_reference = DESIGNATION,",
+						"          DEPARTMENT_reference = DEPARTMENT,",
+						"          isActive_reference = isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"source1, select1 lookup(ID == ID_reference,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter(isNull(ID_reference) || (EMPLOYEE_NAME!=EMPLOYEE_NAME_reference) || (DESIGNATION!=DESIGNATION_reference)||(DEPARTMENT!=DEPARTMENT_reference)) ~> filter1",
+						"filter1 derive(isActive = 1) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          ID,",
+						"          EMPLOYEE_NAME,",
+						"          DESIGNATION,",
+						"          DEPARTMENT,",
+						"          isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"lookup1 filter((!isNull(ID_reference)) && ((EMPLOYEE_NAME!=EMPLOYEE_NAME_reference) || (DESIGNATION!=DESIGNATION_reference)||(DEPARTMENT!=DEPARTMENT_reference))) ~> filter2",
+						"filter2 select(mapColumn(",
+						"          surr_key_reference,",
+						"          ID_reference,",
+						"          EMPLOYEE_NAME_reference,",
+						"          DESIGNATION_reference,",
+						"          DEPARTMENT_reference,",
+						"          isActive_reference",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select3 derive(isActive_reference = 0) ~> derivedColumn2",
+						"derivedColumn2 alterRow(updateIf(2==2)) ~> alterRow1",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          surr_key as integer,",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string,",
+						"          isActive as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ID,",
+						"          EMPLOYEE_NAME,",
+						"          DESIGNATION,",
+						"          DEPARTMENT,",
+						"          isActive",
+						"     )) ~> sink1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          surr_key as integer,",
+						"          ID as integer,",
+						"          EMPLOYEE_NAME as string,",
+						"          DESIGNATION as string,",
+						"          DEPARTMENT as string,",
+						"          isActive as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['surr_key'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          surr_key = surr_key_reference,",
+						"          ID = ID_reference,",
+						"          EMPLOYEE_NAME = EMPLOYEE_NAME_reference,",
+						"          DESIGNATION = DESIGNATION_reference,",
+						"          DEPARTMENT = DEPARTMENT_reference,",
+						"          isActive = isActive_reference",
+						"     )) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls_Student')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql')]"
 			]
 		}
 	]
