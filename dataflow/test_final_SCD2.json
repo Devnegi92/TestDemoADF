@@ -80,7 +80,7 @@
 				"source1, select1 lookup(ID == ID_reference,",
 				"     multiple: true,",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 filter(isNull(ID_reference)) ~> filter1",
+				"lookup1 filter(isNull(ID_reference) || (EMPLOYEE_NAME!=EMPLOYEE_NAME_reference) || (DESIGNATION!=DESIGNATION_reference)||(DEPARTMENT!=DEPARTMENT_reference)) ~> filter1",
 				"filter1 derive(isActive = 1) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
 				"          ID,",
