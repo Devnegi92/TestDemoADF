@@ -9,11 +9,6 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "surr_key",
-				"type": "int",
-				"precision": 10
-			},
-			{
 				"name": "ID",
 				"type": "int",
 				"precision": 10
