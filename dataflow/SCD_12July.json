@@ -30,9 +30,6 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
-				},
-				{
 					"name": "lookup1"
 				},
 				{
@@ -66,16 +63,6 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> referenceforlookup",
-				"referenceforlookup select(mapColumn(",
-				"          SQL_surr_key = surr_key,",
-				"          SQL_ID = ID,",
-				"          SQL_employee_name = employee_name,",
-				"          SQL_DESIGNATION = DESIGNATION,",
-				"          SQL_DEPARTMENT = DEPARTMENT,",
-				"          SQL_isActive = isActive",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
 				"source1, referenceforlookup lookup(source1@ID == referenceforlookup@ID,",
 				"     multiple: true,",
 				"     broadcast: 'auto')~> lookup1",
