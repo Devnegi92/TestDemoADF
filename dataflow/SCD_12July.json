@@ -1,0 +1,106 @@
+{
+	"name": "SCD_12July",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "referenceforlookup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> referenceforlookup",
+				"source1, referenceforlookup lookup(source1@ID == referenceforlookup@ID,",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1",
+				"filter1 alterRow(insertIf(1==1)) ~> AlterRow1",
+				"AlterRow1 select(mapColumn(",
+				"          ID = referenceforlookup@ID,",
+				"          employee_name = referenceforlookup@employee_name,",
+				"          DESIGNATION = referenceforlookup@DESIGNATION,",
+				"          DEPARTMENT = referenceforlookup@DEPARTMENT,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ID,",
+				"          employee_name,",
+				"          DESIGNATION,",
+				"          DEPARTMENT,",
+				"          isActive",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

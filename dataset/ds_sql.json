@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable2",
+	"name": "ds_sql",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_sql",
@@ -9,12 +9,17 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "surr_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
 				"name": "ID",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "employee_name",
+				"name": "EMPLOYEE_NAME",
 				"type": "varchar"
 			},
 			{
@@ -24,11 +29,16 @@
 			{
 				"name": "DEPARTMENT",
 				"type": "varchar"
+			},
+			{
+				"name": "isActive",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "employee_SCD2"
+			"table": "employee_SCD3"
 		}
 	}
 }
