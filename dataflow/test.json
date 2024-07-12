@@ -47,7 +47,7 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          ID as short,",
+				"          ID as integer,",
 				"          EMPLOYEE_NAME as string,",
 				"          DESIGNATION as string,",
 				"          DEPARTMENT as string",
