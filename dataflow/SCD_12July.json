@@ -69,7 +69,6 @@
 				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1",
 				"filter1 alterRow(updateIf(1==1)) ~> AlterRow1",
 				"AlterRow1 select(mapColumn(",
-				"          surr_key,",
 				"          ID = referenceforlookup@ID,",
 				"          employee_name = referenceforlookup@employee_name,",
 				"          DESIGNATION = referenceforlookup@DESIGNATION,",
