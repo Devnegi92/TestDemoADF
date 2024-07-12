@@ -19,7 +19,15 @@
 					"name": "referenceforlookup"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "select1"
@@ -29,6 +37,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "AlterRow1"
 				}
 			],
 			"scriptLines": [
@@ -66,7 +77,27 @@
 				"source1, referenceforlookup lookup(source1@ID == referenceforlookup@ID,",
 				"     multiple: true,",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1"
+				"lookup1 filter((!isNull(referenceforlookup@ID)) && ((source1@EMPLOYEE_NAME!=referenceforlookup@employee_name)||(source1@DESIGNATION!=referenceforlookup@DESIGNATION)||(source1@DEPARTMENT!=referenceforlookup@DEPARTMENT))) ~> filter1",
+				"filter1 alterRow(updateIf(1==1)) ~> AlterRow1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          employee_name as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ID','EMPLOYEE_NAME','DESIGNATION','DEPARTMENT'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
