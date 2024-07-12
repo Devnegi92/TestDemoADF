@@ -1,0 +1,122 @@
+{
+	"name": "test_final_SCD2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_adls_Student",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql",
+						"type": "DatasetReference"
+					},
+					"name": "refrence"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> refrence",
+				"refrence select(mapColumn(",
+				"          surr_key_reference = surr_key,",
+				"          ID_reference = ID,",
+				"          EMPLOYEE_NAME_reference = EMPLOYEE_NAME,",
+				"          DESIGNATION_reference = DESIGNATION,",
+				"          DEPARTMENT_reference = DEPARTMENT,",
+				"          isActive_reference = isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1, select1 lookup(ID == ID_reference,",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(isNull(ID_reference)) ~> filter1",
+				"filter1 derive(isActive = 1) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          ID,",
+				"          EMPLOYEE_NAME,",
+				"          DESIGNATION,",
+				"          DEPARTMENT,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ID,",
+				"          EMPLOYEE_NAME,",
+				"          DESIGNATION,",
+				"          DEPARTMENT,",
+				"          isActive",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
