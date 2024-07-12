@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -43,6 +50,18 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -91,6 +110,19 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
+				"lookup1 filter((!isNull(ID_reference)) && ((EMPLOYEE_NAME!=EMPLOYEE_NAME_reference) || (DESIGNATION!=DESIGNATION_reference)||(DEPARTMENT!=DEPARTMENT_reference))) ~> filter2",
+				"filter2 select(mapColumn(",
+				"          surr_key_reference,",
+				"          ID_reference,",
+				"          EMPLOYEE_NAME_reference,",
+				"          DESIGNATION_reference,",
+				"          DEPARTMENT_reference,",
+				"          isActive_reference",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 derive(isActive_reference = 0) ~> derivedColumn2",
+				"derivedColumn2 alterRow(updateIf(2==2)) ~> alterRow1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -115,7 +147,34 @@
 				"          DESIGNATION,",
 				"          DEPARTMENT,",
 				"          isActive",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surr_key as integer,",
+				"          ID as integer,",
+				"          EMPLOYEE_NAME as string,",
+				"          DESIGNATION as string,",
+				"          DEPARTMENT as string,",
+				"          isActive as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          surr_key = surr_key_reference,",
+				"          ID = ID_reference,",
+				"          EMPLOYEE_NAME = EMPLOYEE_NAME_reference,",
+				"          DESIGNATION = DESIGNATION_reference,",
+				"          DEPARTMENT = DEPARTMENT_reference,",
+				"          isActive = isActive_reference",
+				"     )) ~> sink2"
 			]
 		}
 	}
